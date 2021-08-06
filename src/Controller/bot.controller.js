@@ -4,7 +4,7 @@ const route = express.Router();
 const botService = require("../service/bot.service");
 
 
-route.get("/getmessage", botService.getMessage);
+route.get("/getbotmessage", botService.getBotMessage);
 
 
 route.post("/postmessage", botService.postMessage);

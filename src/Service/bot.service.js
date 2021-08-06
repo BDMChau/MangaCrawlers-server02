@@ -1,12 +1,23 @@
 const firebaseDB = require("../firebase/firebaseDB")
+const jsonResFormat = require("../utils/jsonResFormat")
 
 const botService = {
-   getMessage: async (req, res) => {
+   getBotMessage: async (req, res) => {
       console.log("ok bot sertvice")
 
+
+      const data = [
+         "hello 01",
+         "hello 02"
+      ]
+
+      firebaseDB.toSet(`bot_messages/hello`, data)
   
 
-      const message = await firebaseDB.toReadByAKey("bot_messages", "hello");
+      const message = await firebaseDB.toReadByAKey("users", 123);
+
+
+    
 
       const newArr = message;
 
@@ -16,7 +27,12 @@ const botService = {
    },
 
    postMessage: async (req, res) => {
-    
+      const data ={
+         uid: 123,
+         message:"acacasc"
+      }
+      firebaseDB.toSet(`users/${data.uid}`, data)
+
       res.status(200).json(jsonResFormat(200, "OK", {a:"ok"}))
    },
 
@@ -28,13 +44,6 @@ const botService = {
 
 
 
-const jsonResFormat = (httpCode, statusCode, bodyData) => {
-   return {
-      http_code: httpCode,
-      http_status: statusCode,
-      content: bodyData
-   }
-}
 
 
 const findMessage = async (res, key, value) => {
