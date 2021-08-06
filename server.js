@@ -15,7 +15,7 @@ app.use(cors(corsOptions));
 require("./src/firebase/firebaseConfig");
 
 ///// controllers
-app.use('/api/bot', require('./src/Controller/bot.controller'));
+app.use('/api/bot', require('./src/controller/bot.controller'));
 
 app.get('/', (req, res) => {
     res.status(200).send("MyUploader server api")

@@ -13,7 +13,17 @@ const botService = {
       console.log(newArr)
 
       res.status(200).json(jsonResFormat(200, "OK", {a:"ok"}))
-   }
+   },
+
+   postMessage: async (req, res) => {
+    
+      res.status(200).json(jsonResFormat(200, "OK", {a:"ok"}))
+   },
+
+   getHistoryMessage: async (req, res) => {
+    
+      res.status(200).json(jsonResFormat(200, "OK", {a:"ok"}))
+   },
 }
 
 

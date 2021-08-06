@@ -23,9 +23,9 @@ const firebaseDB = {
         firebaseDatabase.ref().remove();
     },
 
-    toReadByAKey: async (table, key) => {
+    toReadByAKey: async (collection, key) => {
         try {
-            const snapshot = await firebaseDatabase.ref(table).child(key).once("value");
+            const snapshot = await firebaseDatabase.ref(collection).child(key).once("value");
             return snapshot.val();
 
         } catch (error) {
@@ -33,13 +33,13 @@ const firebaseDB = {
         }
     },
 
-    toRead: (table) => {
-        const snapshot = firebaseDatabase.ref(table);
+    toRead: (collection) => {
+        const snapshot = firebaseDatabase.ref(collection);
         return snapshot;
     },
 
-    isExist: (table, key, value) => {
-        const snapshot = firebaseDatabase.ref(table).orderByChild(key).equalTo(value).once("value");
+    isExist: (collection, key, value) => {
+        const snapshot = firebaseDatabase.ref(collection).orderByChild(key).equalTo(value).once("value");
         return snapshot;
     }
 }
