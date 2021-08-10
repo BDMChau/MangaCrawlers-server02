@@ -4,13 +4,14 @@ const route = express.Router();
 const botService = require("../service/bot.service");
 
 
-route.get("/getbotmessage", botService.getBotMessage);
+route.post("/getbotmessage", botService.getBotMessage);
 
 
 route.post("/postmessage", botService.postMessage);
 
+route.post("/addtoqueue", botService.addToQueue);
 
-route.post("/gethistorymessages", botService.getHistoryMessage);
+route.get("/gethistorymessages", botService.getHistoryMessages);
 
 
 

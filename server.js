@@ -8,6 +8,12 @@ const server = require('http').createServer(app);
 const axios = require("axios")
 
 
+///// bodyParser
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true
+}));
+
 ///// cors
 const cors = require('cors');
 const corsOptions = require('./src/config/cors');

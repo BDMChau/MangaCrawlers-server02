@@ -5,6 +5,10 @@ const firebaseDB = {
         const snapshot = firebaseDatabase.ref(collection).push(data);
         return snapshot
     },
+    toGetKeyOfPush: (collection, data) => {
+        const snapshot = firebaseDatabase.ref(collection).push().getKey();
+        return snapshot
+    },
 
     toSet: (collection, data) => {
         const snapshot = firebaseDatabase.ref(collection).set(data);
@@ -29,18 +33,18 @@ const firebaseDB = {
             return snapshot.val();
 
         } catch (error) {
-            throw error;
+            console.log(error);
         }
     },
 
-    toRead: (collection) => {
-        const snapshot = firebaseDatabase.ref(collection);
-        return snapshot;
-    },
-
-    isExist: (collection, key, value) => {
-        const snapshot = firebaseDatabase.ref(collection).orderByChild(key).equalTo(value).once("value");
-        return snapshot;
+    isExisted: async (collection, key, value) => {
+        try {
+            const snapshot = await firebaseDatabase.ref(collection).orderByChild(key).equalTo(value).once("value");
+            return snapshot.val();
+            
+        } catch (err) {
+            console.log(err)
+        }
     }
 }
 
