@@ -41,11 +41,37 @@ const firebaseDB = {
         try {
             const snapshot = await firebaseDatabase.ref(collection).orderByChild(key).equalTo(value).once("value");
             return snapshot.val();
-            
+
         } catch (err) {
             console.log(err)
         }
-    }
+    },
+    paginate: async (collection, key, offset, limit) => {
+        try {
+            const snapshot = await firebaseDatabase.ref(collection)
+                .child(key)
+                .orderByKey()
+                .endAt(offset.toString())
+                .limitToLast(limit)
+                .once("value");
+
+            return snapshot;
+        } catch (err) {
+            console.log(err)
+        }
+    },
+    paginateInFirstTime: async (collection, key, limit) => {
+        try {
+            const snapshot = await firebaseDatabase.ref(collection)
+                .child(key)
+                .limitToLast(limit)
+                .once("value");
+
+            return snapshot;
+        } catch (err) {
+            console.log(err)
+        }
+    },
 }
 
 module.exports = firebaseDB;

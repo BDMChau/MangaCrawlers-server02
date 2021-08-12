@@ -6,13 +6,6 @@ const jsonResFormat = require("../utils/jsonResFormat")
 
 
 const botService = {
-   getBotMessage: async (req, res) => {
-      const data = {
-         userId: "",
-         message: {}
-      }
-   },
-
    postMessage: async (req, res) => {
       const message = req.body.message; // object
       let userId = req.body.userId;
@@ -78,7 +71,7 @@ const botService = {
                user_id: ""
             }))
          }
-         
+
          const obj = Object.values(isUserExisted);
 
          let queueArr = [];
@@ -106,39 +99,59 @@ const botService = {
    },
 
    getHistoryMessages: async (req, res) => {
-      const arr = [
-         {
-            role: "user",
-            cmd: "play",
-            content: "bla bla"
-         },
-         {
-            role: "user",
-            cmd: "play",
-            content: "bla bla"
-         },
+      const { offset, limit, userId } = req.body;
 
-      ]
+      try {
+         const isUserExisted = await firebaseDB.isExisted(`users`, "userId", userId);
+         if (!isUserExisted) {
+            res.status(400).json(jsonResFormat(400, "BAD_REQUEST", {
+               err: "No history messages, user does not exist!",
+               user_id: userId
+            }))
 
-      const data = {
-         userId: uuidv4(),
-         arr: arr
+         } else {
+            let resFromDatabase;
+            let messagesToResponse = [];
+            let countinueAt;
+
+
+            if (offset === 0) {
+               resFromDatabase = await firebaseDB.paginateInFirstTime(`users/${userId}`, "messages", limit);
+               messagesToResponse = Object.values(resFromDatabase.val());
+            } else {
+               resFromDatabase = await firebaseDB.paginate(`users/${userId}`, "messages", offset, limit);
+               if (resFromDatabase) messagesToResponse = Object.values(resFromDatabase.val())
+            }
+
+
+            if (messagesToResponse.length === 0) {
+               res.status(204).json(jsonResFormat(204, "OK", { msg: "no messages found", }))
+               return;
+            }
+
+            const objKeys = Object.keys(resFromDatabase.val())
+            countinueAt = parseInt(objKeys[objKeys.length - 1]) - limit;
+
+            // end, no more messages
+            if (messagesToResponse.length < limit) {
+               res.status(200).json(jsonResFormat(200, "OK", {
+                  msg: "end of conversation",
+                  messages: messagesToResponse
+               }))
+               return;
+            }
+
+
+            res.status(200).json(jsonResFormat(200, "OK", {
+               msg: "Get history messages OK",
+               countinue_at: countinueAt, // offset for the next query
+               messages: messagesToResponse
+            }))
+            return;
+         }
+      } catch (err) {
+         console.log("post message err: ", err);
       }
-
-      // const aaa = await firebaseDB.toSet(`users/1/arr`, arr)
-      const aaa = await firebaseDB.isExisted(`users`, "userId", "")
-      console.log(aaa)
-      //   const obj = Object.values(aaa);
-
-      //   obj.forEach(e => {
-      //      console.log(e.arr)
-      //   });
-
-      console.log()
-
-
-
-      res.status(200).json(jsonResFormat(200, "OK", { a: "ok" }))
    },
 }
 
