@@ -116,10 +116,10 @@ const botService = {
 
 
             if (offset === 0) {
-               resFromDatabase = await firebaseDB.paginateInFirstTime(`users/${userId}`, "messages", limit);
+               resFromDatabase = await firebaseDB.paginateFromEndInFirstTime(`users/${userId}`, "messages", limit);
                messagesToResponse = Object.values(resFromDatabase.val());
             } else {
-               resFromDatabase = await firebaseDB.paginate(`users/${userId}`, "messages", offset, limit);
+               resFromDatabase = await firebaseDB.paginateFromEnd(`users/${userId}`, "messages", offset, limit);
                if (resFromDatabase) messagesToResponse = Object.values(resFromDatabase.val())
             }
 
@@ -131,9 +131,9 @@ const botService = {
 
             const objKeys = Object.keys(resFromDatabase.val())
             countinueAt = parseInt(objKeys[objKeys.length - 1]) - limit;
-
+            
             // end, no more messages
-            if (messagesToResponse.length < limit) {
+            if (countinueAt <= 0) {
                res.status(200).json(jsonResFormat(200, "OK", {
                   msg: "end of conversation",
                   messages: messagesToResponse

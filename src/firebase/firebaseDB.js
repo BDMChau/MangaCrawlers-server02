@@ -46,7 +46,7 @@ const firebaseDB = {
             console.log(err)
         }
     },
-    paginate: async (collection, key, offset, limit) => {
+    paginateFromEnd: async (collection, key, offset, limit) => {
         try {
             const snapshot = await firebaseDatabase.ref(collection)
                 .child(key)
@@ -60,7 +60,7 @@ const firebaseDB = {
             console.log(err)
         }
     },
-    paginateInFirstTime: async (collection, key, limit) => {
+    paginateFromEndInFirstTime: async (collection, key, limit) => {
         try {
             const snapshot = await firebaseDatabase.ref(collection)
                 .child(key)
