@@ -1,4 +1,3 @@
-const e = require('cors');
 const { v4: uuidv4 } = require('uuid');
 
 const firebaseDB = require("../firebase/firebaseDB")
@@ -13,7 +12,6 @@ const botService = {
       if (!userId) {
          userId = uuidv4();
       }
-
 
       try {
          const isUserExisted = await firebaseDB.isExisted(`users`, "userId", userId);
@@ -35,7 +33,7 @@ const botService = {
 
             const data = {
                userId: userId,
-               messages: message
+               messages: message,
             };
 
             let messagesArr = [];
@@ -60,7 +58,8 @@ const botService = {
 
    addToQueue: async (req, res) => {
       const videoId = req.body.youtube_video_id; // object
-      let userId = req.body.userId;
+      const videoName = req.body.youtube_video_name; // object
+      let userId = req.body.user_id;
 
 
       try {
@@ -70,6 +69,7 @@ const botService = {
                err: "Cannot add to queue, user does not exist!",
                user_id: ""
             }))
+            return;
          }
 
          const obj = Object.values(isUserExisted);
@@ -82,20 +82,98 @@ const botService = {
 
             queueArr = val.queue;
          });
-         queueArr.push(videoId)
+
+         const newItem = {
+            queue_id: uuidv4(),
+            video_id: videoId,
+            video_name: videoName,
+            is_error: false
+         };
+
+         queueArr.push(newItem);
 
 
          firebaseDB.toSet(`users/${userId}/queue`, queueArr);
 
          res.status(200).json(jsonResFormat(200, "OK", {
             msg: "Add to queue OK!",
+            new_item: newItem,
             user_id: userId
          }))
 
       } catch (err) {
-         console.log("post message err: ", err);
+         console.log("add queue err: ", err);
       }
 
+   },
+
+   modifyInQueueWhenVideoError: async (req, res) => {
+      const queueId = req.body.queue_id; // object
+      let userId = req.body.user_id;
+
+
+      try {
+         const isUserExisted = await firebaseDB.isExisted(`users`, "userId", userId ? userId : "");
+         if (!isUserExisted) {
+            res.status(400).json(jsonResFormat(400, "BAD_REQUEST", {
+               err: "User does not exist!",
+               queue_id: queueId ? queueId : ""
+            }))
+            return;
+         }
+         const obj = Object.values(isUserExisted);
+
+         let queueArr = [];
+         obj.forEach(val => {
+            queueArr = val.queue;
+         });
+         
+         let modifiedItem;
+         for (let i = 0; i < queueArr.length; i++) {
+            if(queueArr[i].queue_id === queueId){
+               queueArr[i].is_error = true;
+               modifiedItem = queueArr[i];
+               break;
+            }  
+         }
+
+
+         firebaseDB.toSet(`users/${userId}/queue/`, queueArr);
+
+         res.status(200).json(jsonResFormat(200, "OK", {
+            msg: "modify error video OK!",
+            modified_item: modifiedItem,
+         }))
+
+      } catch (err) {
+         console.log("add queue err: ", err);
+      }
+
+   },
+
+
+   getQueue: async (req, res) => {
+      const userId = req.body.user_id;
+
+      try {
+         const isUserExisted = await firebaseDB.isExisted(`users`, "userId", userId ? userId : "");
+         if (!isUserExisted) {
+            res.status(400).json(jsonResFormat(400, "BAD_REQUEST", {
+               err: "Cannot get queue, user does not exist!",
+               user_id: ""
+            }))
+         }
+
+         const queue = await firebaseDB.toReadByAKey(`users/${userId}`, "queue");
+
+         res.status(200).json(jsonResFormat(200, "OK", {
+            msg: "Get list items in queue OK",
+            videos_id_queue: queue
+         }))
+
+      } catch (err) {
+         console.log("add queue err: ", err);
+      }
    },
 
    getHistoryMessages: async (req, res) => {
@@ -131,7 +209,7 @@ const botService = {
 
             const objKeys = Object.keys(resFromDatabase.val())
             countinueAt = parseInt(objKeys[objKeys.length - 1]) - limit;
-            
+
             // end, no more messages
             if (countinueAt <= 0) {
                res.status(200).json(jsonResFormat(200, "OK", {
@@ -150,7 +228,7 @@ const botService = {
             return;
          }
       } catch (err) {
-         console.log("post message err: ", err);
+         console.log("get history messages err: ", err);
       }
    },
 }

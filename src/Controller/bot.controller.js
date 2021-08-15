@@ -8,6 +8,10 @@ route.post("/postmessage", botService.postMessage);
 
 route.post("/addtoqueue", botService.addToQueue);
 
+route.post("/modifyerrorvideo", botService.modifyInQueueWhenVideoError);
+
+route.post("/getqueue", botService.getQueue);
+
 route.post("/gethistorymessages", botService.getHistoryMessages);
 
 
