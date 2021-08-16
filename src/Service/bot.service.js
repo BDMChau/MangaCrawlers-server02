@@ -51,10 +51,11 @@ const botService = {
          }
 
       } catch (err) {
-         console.log("post message err: ", err);
+         console.error("post message err: ", err);
       }
 
    },
+
 
    addToQueue: async (req, res) => {
       const videoId = req.body.youtube_video_id; // object
@@ -95,17 +96,18 @@ const botService = {
 
          firebaseDB.toSet(`users/${userId}/queue`, queueArr);
 
-         res.status(200).json(jsonResFormat(200, "OK", {
+         res.status(201).json(jsonResFormat(201, "OK", {
             msg: "Add to queue OK!",
             new_item: newItem,
             user_id: userId
          }))
 
       } catch (err) {
-         console.log("add queue err: ", err);
+         console.error("add queue err: ", err);
       }
 
    },
+
 
    modifyInQueueWhenVideoError: async (req, res) => {
       const queueId = req.body.queue_id; // object
@@ -127,14 +129,14 @@ const botService = {
          obj.forEach(val => {
             queueArr = val.queue;
          });
-         
+
          let modifiedItem;
          for (let i = 0; i < queueArr.length; i++) {
-            if(queueArr[i].queue_id === queueId){
+            if (queueArr[i].queue_id === queueId) {
                queueArr[i].is_error = true;
                modifiedItem = queueArr[i];
                break;
-            }  
+            }
          }
 
 
@@ -146,7 +148,7 @@ const botService = {
          }))
 
       } catch (err) {
-         console.log("add queue err: ", err);
+         console.error("add queue err: ", err);
       }
 
    },
@@ -172,9 +174,35 @@ const botService = {
          }))
 
       } catch (err) {
-         console.log("add queue err: ", err);
+         console.error("add queue err: ", err);
       }
    },
+
+
+   removeQueue: async (req, res) => {
+      const userId = req.body.user_id;
+
+      try {
+         const isUserExisted = await firebaseDB.isExisted(`users`, "userId", userId ? userId : "");
+         if (!isUserExisted) {
+            res.status(400).json(jsonResFormat(400, "BAD_REQUEST", {
+               err: "Cannot remove queue, user does not exist!",
+               user_id: ""
+            }))
+         }
+
+         firebaseDB.toSet(`users/${userId}/queue`, []);
+
+         res.status(200).json(jsonResFormat(200, "OK", {
+            msg: "Remove all items in queue OK",
+            queue: []
+         }))
+
+      } catch (err) {
+         console.error("add queue err: ", err);
+      }
+   },
+
 
    getHistoryMessages: async (req, res) => {
       const { offset, limit, userId } = req.body;
@@ -228,7 +256,7 @@ const botService = {
             return;
          }
       } catch (err) {
-         console.log("get history messages err: ", err);
+         console.error("get history messages err: ", err);
       }
    },
 }
