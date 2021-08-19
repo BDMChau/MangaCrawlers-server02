@@ -59,7 +59,7 @@ const botService = {
 
    addToQueue: async (req, res) => {
       const videoId = req.body.youtube_video_id; // object
-      const videoName = req.body.youtube_video_name; // object
+      const videoTitle = req.body.youtube_video_title; // object
       let userId = req.body.user_id;
 
 
@@ -87,7 +87,7 @@ const botService = {
          const newItem = {
             queue_id: uuidv4(),
             video_id: videoId,
-            video_name: videoName,
+            video_title: videoTitle,
             is_error: false
          };
 
