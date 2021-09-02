@@ -4,15 +4,17 @@ const route = express.Router();
 const botService = require("../service/bot.service");
 
 
-route.get("/getmessage", botService.getMessage);
-
-
 route.post("/postmessage", botService.postMessage);
 
+route.put("/addtoqueue", botService.addToQueue);
 
-route.post("/gethistorymessages",  botService.getHistoryMessage);
+route.put("/modifyerrorvideo", botService.modifyInQueueWhenVideoError);
 
+route.post("/getqueue", botService.getQueue);
 
+route.delete("/removequeue", botService.removeQueue);
+
+route.post("/gethistorymessages", botService.getHistoryMessages);
 
 
 module.exports = route;

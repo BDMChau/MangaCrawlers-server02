@@ -5,6 +5,10 @@ const firebaseDB = {
         const snapshot = firebaseDatabase.ref(collection).push(data);
         return snapshot
     },
+    toGetKeyOfPush: (collection, data) => {
+        const snapshot = firebaseDatabase.ref(collection).push().getKey();
+        return snapshot
+    },
 
     toSet: (collection, data) => {
         const snapshot = firebaseDatabase.ref(collection).set(data);
@@ -29,19 +33,45 @@ const firebaseDB = {
             return snapshot.val();
 
         } catch (error) {
-            throw error;
+            console.log(error);
         }
     },
 
-    toRead: (collection) => {
-        const snapshot = firebaseDatabase.ref(collection);
-        return snapshot;
-    },
+    isExisted: async (collection, key, value) => {
+        try {
+            const snapshot = await firebaseDatabase.ref(collection).orderByChild(key).equalTo(value).once("value");
+            return snapshot.val();
 
-    isExist: (collection, key, value) => {
-        const snapshot = firebaseDatabase.ref(collection).orderByChild(key).equalTo(value).once("value");
-        return snapshot;
-    }
+        } catch (err) {
+            console.log(err)
+        }
+    },
+    paginateFromEnd: async (collection, key, offset, limit) => {
+        try {
+            const snapshot = await firebaseDatabase.ref(collection)
+                .child(key)
+                .orderByKey()
+                .endAt(offset.toString())
+                .limitToLast(limit)
+                .once("value");
+
+            return snapshot;
+        } catch (err) {
+            console.log(err)
+        }
+    },
+    paginateFromEndInFirstTime: async (collection, key, limit) => {
+        try {
+            const snapshot = await firebaseDatabase.ref(collection)
+                .child(key)
+                .limitToLast(limit)
+                .once("value");
+
+            return snapshot;
+        } catch (err) {
+            console.log(err)
+        }
+    },
 }
 
 module.exports = firebaseDB;

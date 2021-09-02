@@ -2,4 +2,4 @@
 .env
 
 # firebase/serviceAccountKeys.json
-serviceAccountKeys.json
+# serviceAccountKeys.json

@@ -1,21 +1,32 @@
 const httpError = require('http-errors');
 const express = require('express');
 const port = process.env.PORT || 5000;
+
 const app = express();
 const server = require('http').createServer(app);
+
 const axios = require("axios")
 
-///// cor
+
+///// bodyParser
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: true
+}));
+
+///// cors
 const cors = require('cors');
 const corsOptions = require('./src/config/cors');
 app.use(cors(corsOptions));
 
 
-/////
+///// firebase
 require("./src/firebase/firebaseConfig");
 
+
 ///// controllers
-app.use('/api/bot', require('./src/controller/bot.controller'));
+const botController = require('./src/controller/bot.controller');
+app.use('/api/bot', botController);
 
 app.get('/', (req, res) => {
     res.status(200).send("MyUploader server api")
