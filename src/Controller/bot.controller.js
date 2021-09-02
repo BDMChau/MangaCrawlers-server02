@@ -10,7 +10,7 @@ route.get("/getmessage", botService.getMessage);
 route.post("/postmessage", botService.postMessage);
 
 
-route.post("/gethistorymessages", botService.getHistoryMessage);
+route.post("/gethistorymessages",  botService.getHistoryMessage);
 
 
 
