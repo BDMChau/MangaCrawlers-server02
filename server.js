@@ -25,7 +25,7 @@ require("./src/firebase/firebaseConfig");
 
 
 ///// controllers
-const botController = require('./src/Controller/bot.controller');
+const botController = require('./src/controller/bot.controller');
 app.use('/api/bot', botController);
 
 app.get('/', (req, res) => {
