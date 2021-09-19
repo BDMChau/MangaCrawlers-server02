@@ -11,7 +11,7 @@ const axios = require("axios")
 ///// bodyParser
 app.use(express.json());
 app.use(express.urlencoded({
-  extended: true
+    extended: true
 }));
 
 ///// cors
@@ -24,12 +24,12 @@ app.use(cors(corsOptions));
 require("./src/firebase/firebaseConfig");
 
 
-///// controllers
-const botController = require('./src/controller/bot.controller');
-app.use('/api/bot', botController);
+///// routes
+const botRoute = require('./src/routes/bot.route');
+app.use('/api/bot', botRoute);
 
 app.get('/', (req, res) => {
-    res.status(200).send("MyUploader server api")
+    res.status(200).send("MangaCrawlers server_api_02")
 });
 
 app.get('/herokuwakeup', (req, res) => {
